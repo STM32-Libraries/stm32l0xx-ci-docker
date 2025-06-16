@@ -1,31 +1,30 @@
-name: Build and Publish Docker Image
+name: Build STM32L0xx HAL
 
 on:
   push:
-    branches: [ main ]
+  pull_request:
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      packages: write
+    container:
+      image: ghcr.io/stm32-libraries/stm32l0xx-ci-docker:latest
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Make build script executable
+        run: chmod +x build.sh
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+      - name: Run build
+        run: |
+          export CC=arm-none-eabi-gcc
+          export CXX=arm-none-eabi-g++
+          ./build.sh
+
+      - name: Upload static library artifact
+        uses: actions/upload-artifact@v4
         with:
-          context: .
-          push: true
-          tags: ghcr.io/stm32-libraries/stm32l0xx-ci-docker:latest
+          name: libhal
+          path: build/*.a
