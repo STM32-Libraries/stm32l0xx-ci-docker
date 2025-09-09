@@ -40,3 +40,13 @@ RUN mkdir -p /opt/cmake && \
     make -j$(nproc) && \
     make install && \
     cmake --version
+
+# Install Ruby and Ceedling dependencies
+RUN apt-get update && apt-get install -y \
+    ruby-full \
+    gcc \
+    gcovr \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /opt/ceedling
+COPY ceedling-1.0.1.gem .
+RUN gem install ./ceedling-1.0.1.gem
