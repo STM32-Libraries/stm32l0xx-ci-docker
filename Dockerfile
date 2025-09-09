@@ -48,5 +48,7 @@ RUN apt-get update && apt-get install -y \
     gcovr \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /opt/ceedling
-COPY ceedling-1.0.1.gem .
-RUN gem install ./ceedling-1.0.1.gem
+RUN wget https://github.com/ThrowTheSwitch/Ceedling/releases/download/v1.0.1/ceedling-1.0.1.gem \
+    && gem install ./ceedling-1.0.1.gem \
+    && rm ceedling-1.0.1.gem
+
